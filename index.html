@@ -21,24 +21,53 @@
     <script src="interface.js"></script>
     <script>
         function updateRule(grid, iRow, iCol) {
-            let nweeds = 0
+            let nweeds = 0;
+            let nweedsClose = 0; // Voisins directs (rayon 1)
+
+            // Compter les voisins herbe dans un rayon de 3
             for (let i = -3; i < 4; i++) {
                 for (let j = -3; j < 4; j++) {
-                    if (iRow + i < 0 || iRow + i >= grid.length) continue
-                    if (iCol + j < 0 || iCol + j >= grid[0].length) continue
-                    if (i == 0 && j == 0) continue
-                    if (grid[iRow + i][iCol + j] == 1) nweeds++
+                    if (iRow + i < 0 || iRow + i >= grid.length) continue;
+                    if (iCol + j < 0 || iCol + j >= grid[0].length) continue;
+                    if (i == 0 && j == 0) continue;
+
+                    if (grid[iRow + i][iCol + j] == 1) {
+                        nweeds++;
+                        // Compter aussi les voisins proches
+                        if (Math.abs(i) <= 1 && Math.abs(j) <= 1) {
+                            nweedsClose++;
+                        }
+                    }
                 }
             }
-            // herbe qui pousse
+
+            // Si c'est du vide (case 0)
             if (grid[iRow][iCol] == 0) {
-                const prob = 0.0001 + Math.log(nweeds+1) * 0.001 
-                return Math.random() > prob ? 0 : 1
+                // Si trop d'herbe dans la zone, bloquer toute croissance
+                if (nweeds >= 10) {
+                    return 0;
+                }
+
+                // Propagation rapide si voisins proches
+                if (nweedsClose > 0) {
+                    const propagationChance = nweedsClose * 0.15;
+                    if (Math.random() < propagationChance) {
+                        return 1;
+                    }
+                }
+
+                // Germination spontanée rare
+                const germinationChance = 0.0001;
+                return Math.random() < germinationChance ? 1 : 0;
             }
+
+            // Si c'est un lapin en mouvement (état 3 → 2)
             if (grid[iRow][iCol] == 3) {
-                return 2
+                return 2;
             }
-            return grid[iRow][iCol]
+
+            // Sinon garder l'état actuel
+            return grid[iRow][iCol];
         }
     </script>
 </body>

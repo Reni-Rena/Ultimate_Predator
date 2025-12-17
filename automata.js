@@ -17,7 +17,6 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
     for (let x = 0; x < grid.length; x++) {
         for (let y = 0; y < grid[0].length; y++) {
             if (newGrid[x][y] == 2) {
-                newGrid[x][y] = 3
                 // déplacement vers de la bouf
                 if (y > 0 && newGrid[x][y - 1] == 1) {
                     newGrid[x][y - 1] = 3;
