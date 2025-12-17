@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Super Predator</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <button id="toggleButton">Démarrer/Arrêter</button>
+    <button id="resetButton">reset</button>
+    <div>
+        <label for="speedSlider">Vitesse : </label>
+        <input type="range" id="speedSlider" min="1" max="60" value="5">
+    </div>
+    <div id="iterationCount">Itération: 0</div>
+    <canvas id="canvas"></canvas>
+    <script src="automata.js"></script>
+    <script src="interface.js"></script>
+    <script>
+        function updateRule(grid, iRow, iCol) {
+            let nweeds = 0
+            for (let i = -3; i < 4; i++) {
+                for (let j = -3; j < 4; j++) {
+                    if (iRow + i < 0 || iRow + i >= grid.length) continue
+                    if (iCol + j < 0 || iCol + j >= grid[0].length) continue
+                    if (i == 0 && j == 0) continue
+                    if (grid[iRow + i][iCol + j] == 1) nweeds++
+                }
+            }
+            if (grid[iRow][iCol] == 0) {
+                const prob = 0.0001 + Math.log(nweeds+1) * 0.001 
+                return Math.random() > prob ? 0 : 1
+            }
+            if (grid[iRow][iCol] == 3) {
+                return 2
+            }
+            return grid[iRow][iCol]
+        }
+    </script>
+</body>
+</html>
