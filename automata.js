@@ -71,6 +71,10 @@ function findEmptyCellAround(grid, x, y, range = 1) {
     return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 function updateGrid(grid, newGrid, automataRuleCallback) {
+    const rabbits = grid.flat().filter(cell => cell === 2).length;
+    const wolf = grid.flat().filter(cell => cell === 3).length;
+    console.log("Lapins :", rabbits, " || Wolf :", wolf);
+
     // propagation naturel
     for (let x = 0; x < grid.length; x++) {
         for (let y = 0; y < grid[0].length; y++) {
@@ -114,7 +118,8 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                 }
                 if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 2 && newGrid[nx][ny] != 2) {                    newGrid[nx][ny] = 2
                     if (grid[nx][ny] == eat) {
-                        hungerGrid[nx][ny] = 0
+                        hungerGrid[nx][ny] = hungerGrid[x][y] - 5
+                        if (hungerGrid[nx][ny] < 0) hungerGrid[nx][ny] = 0
                     } else {
                         hungerGrid[nx][ny] = hungerGrid[x][y] + 1
                     }
