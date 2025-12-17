@@ -67,7 +67,7 @@ canvas.addEventListener('click', function(event) {
     // Inverser l'état de la cellule
     if (gridX >= 0 && gridX < gridSizeX && gridY >= 0 && gridY < gridSizeY) {
         grid[gridY][gridX]++
-        if (grid[gridY][gridX] > 2) grid[gridY][gridX] = 0
+        if (grid[gridY][gridX] > 3) grid[gridY][gridX] = 0
     }
 
     // Redessiner la grille

@@ -5,7 +5,7 @@ function buildGrid(gridSizeX, gridSizeY) {
     return grid
 }
 
-function findNearestFood(grid, x, y, visionRange) {
+function findNearestFood(grid, x, y, visionRange, food) {
     let closest = null;
     let minDist = Infinity;
 
@@ -17,7 +17,7 @@ function findNearestFood(grid, x, y, visionRange) {
             if (
                 nx >= 0 && nx < grid.length &&
                 ny >= 0 && ny < grid[0].length &&
-                grid[nx][ny] === 1 // 1 = herbe (à adapter si besoin)
+                grid[nx][ny] === food // food = 1 pour herbe et 2 pour lapin
             ) {
                 const dist = Math.abs(dx) + Math.abs(dy);
                 if (dist < minDist) {
@@ -49,7 +49,8 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
             if (grid[x][y] == 2) {
 
                 const visionRange = 4;
-                const food = findNearestFood(grid, x, y, visionRange);
+                const eat = 1; // herbe
+                const food = findNearestFood(grid, x, y, visionRange, eat);
 
                 newGrid[x][y] = 0
                 if (hungerGrid[x][y] >= 20) continue
@@ -71,9 +72,8 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                     if (dir === 2) nx--;
                     if (dir === 3) nx++;
                 }
-                if (newGrid[nx][ny] != 2 && grid[nx][ny] != 2) {
-                    newGrid[nx][ny] = 2
-                    if (grid[nx][ny] == 1) {
+                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 2 && newGrid[nx][ny] != 2) {                    newGrid[nx][ny] = 2
+                    if (grid[nx][ny] == eat) {
                         hungerGrid[nx][ny] = 0
                     } else {
                         hungerGrid[nx][ny] = hungerGrid[x][y] + 1
@@ -81,6 +81,51 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                     hungerGrid[x][y] = 0
                 } else {
                     newGrid[x][y] = 2
+                    hungerGrid[x][y] += 1
+                }
+            }
+        }
+    }
+
+
+    // déplacement Loup
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
+            if (grid[x][y] == 3) {
+
+                const visionRange = 15;
+                const eat = 2;
+                const food = findNearestFood(grid, x, y, visionRange, eat);
+
+                newGrid[x][y] = 0
+                if (hungerGrid[x][y] >= 35) continue
+
+                let nx = x;
+                let ny = y;
+
+                if (food) {
+                    if (food.x > x) nx++;
+                    else if (food.x < x) nx--;
+
+                    if (food.y > y) ny++;
+                    else if (food.y < y) ny--;
+                } else {
+                    // déplacement aléatoire si aucune herbe visible
+                    const dir = Math.floor(Math.random() * 4);
+                    if (dir === 0) ny--;
+                    if (dir === 1) ny++;
+                    if (dir === 2) nx--;
+                    if (dir === 3) nx++;
+                }
+                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 3 && newGrid[nx][ny] != 3) {                    newGrid[nx][ny] = 3
+                    if (grid[nx][ny] == eat) {
+                        hungerGrid[nx][ny] = 0
+                    } else {
+                        hungerGrid[nx][ny] = hungerGrid[x][y] + 1
+                    }
+                    hungerGrid[x][y] = 0
+                } else {
+                    newGrid[x][y] = 3
                     hungerGrid[x][y] += 1
                 }
             }
@@ -97,8 +142,8 @@ function drawGrid(grid, cellSize) {
             switch (grid[i][j]) {
                 case 0: ctx.fillStyle = 'lime'; break  // vide
                 case 1: ctx.fillStyle = 'green'; break // herbe
-                case 2: ctx.fillStyle = 'gray'; break  // lapin
-                case 3: ctx.fillStyle = 'black'; break  // loup
+                case 2: ctx.fillStyle = 'lightgray'; break  // lapin
+                case 3: ctx.fillStyle = 'red'; break  // loup
             }
             ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
         }
