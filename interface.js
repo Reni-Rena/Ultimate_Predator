@@ -29,10 +29,16 @@ toggleButton.addEventListener('click', () => {
 });
 
 resetButton.addEventListener('click', () => {
-    grid = buildGrid(gridSizeX, gridSizeY)
-    i = 0
+    // stop la simulation
     isRunning = false
+
+    // reset la grille
+    grid = buildGrid(gridSizeX, gridSizeY)
     drawGrid(grid, cellSize);
+
+    // reset le texte
+    i = 0
+    iterationCountElement.innerText = `Itération: ${++i}`;
 });
 
 speedSlider.addEventListener('input', () => {
