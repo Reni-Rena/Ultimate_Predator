@@ -3,8 +3,8 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const iterationCountElement = document.getElementById('iterationCount');
 
-const gridSizeX = 30; // Largeur de la grille
-const gridSizeY = 30; // Hauteur de la grille
+const gridSizeX = 100; // Largeur de la grille
+const gridSizeY = 100; // Hauteur de la grille
 const cellSize = 10; // Taille de chaque cellule en pixels
 var isRunning = false
 var speed = 5
