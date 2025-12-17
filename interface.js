@@ -16,6 +16,7 @@ canvas.height = gridSizeY * cellSize;
 
 var grid = buildGrid(gridSizeX, gridSizeY)  
 var newGrid = buildGrid(gridSizeX, gridSizeY)
+var hungerGrid = buildGrid(gridSizeX, gridSizeY)
 
 const toggleButton = document.getElementById('toggleButton');
 const resetButton = document.getElementById('resetButton');
