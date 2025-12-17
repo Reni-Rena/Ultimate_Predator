@@ -30,6 +30,46 @@ function findNearestFood(grid, x, y, visionRange, food) {
     return closest;
 }
 
+function hasNearbyRabbit(grid, x, y, range = 3) {
+    for (let dx = -range; dx <= range; dx++) {
+        for (let dy = -range; dy <= range; dy++) {
+            if (dx === 0 && dy === 0) continue;
+
+            const nx = x + dx;
+            const ny = y + dy;
+
+            if (
+                nx >= 0 && ny >= 0 &&
+                nx < grid.length && ny < grid[0].length &&
+                grid[nx][ny] === 2
+            ) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+function findEmptyCellAround(grid, x, y, range = 1) {
+    const emptyCells = [];
+
+    for (let dx = -range; dx <= range; dx++) {
+        for (let dy = -range; dy <= range; dy++) {
+            const nx = x + dx;
+            const ny = y + dy;
+
+            if (
+                nx >= 0 && ny >= 0 &&
+                nx < grid.length && ny < grid[0].length &&
+                grid[nx][ny] === 0
+            ) {
+                emptyCells.push({ x: nx, y: ny });
+            }
+        }
+    }
+
+    if (emptyCells.length === 0) return null;
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+}
 function updateGrid(grid, newGrid, automataRuleCallback) {
     // propagation naturel
     for (let x = 0; x < grid.length; x++) {
@@ -86,14 +126,32 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
             }
         }
     }
+    // reproduction lapin
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
 
+            if (grid[x][y] === 2) {
+
+                if (!hasNearbyRabbit(grid, x, y, 3)) continue;
+
+                // chance pour éviter explosion de population
+                if (Math.random() > 0.02) continue; // 2%
+
+                const spawn = findEmptyCellAround(newGrid, x, y, 1);
+                if (!spawn) continue;
+
+                newGrid[spawn.x][spawn.y] = 2;
+                hungerGrid[spawn.x][spawn.y] = 0;
+            }
+        }
+    }   
 
     // déplacement Loup
     for (let x = 0; x < grid.length; x++) {
         for (let y = 0; y < grid[0].length; y++) {
             if (grid[x][y] == 3) {
 
-                const visionRange = 15;
+                const visionRange = 25;
                 const eat = 2;
                 const food = findNearestFood(grid, x, y, visionRange, eat);
 
