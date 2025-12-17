@@ -7,15 +7,15 @@ function buildGrid(gridSizeX, gridSizeY) {
 
 function updateGrid(grid, newGrid, automataRuleCallback) {
     // propagation naturel
-    for (let y = 0; y < grid.length; y++) {
-        for (let x = 0; x < grid[0].length; x++) {
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
 
             newGrid[x][y] = automataRuleCallback(grid,x,y)
         }
     }
     // déplacement lapin
-    for (let y = 0; y < grid.length; y++) {
-        for (let x = 0; x < grid[0].length; x++) {
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
             if (newGrid[x][y] == 2) {
                 newGrid[x][y] = 3
                 // déplacement vers de la bouf
@@ -61,8 +61,8 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
 
 function drawGrid(grid, cellSize) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < gridSizeY; i++) {
-        for (let j = 0; j < gridSizeX; j++) {
+    for (let i = 0; i < gridSizeX; i++) {
+        for (let j = 0; j < gridSizeY; j++) {
             switch (grid[i][j]) {
                 case 0: ctx.fillStyle = 'lime'; break  // vide
                 case 1: ctx.fillStyle = 'green'; break // herbe
