@@ -92,7 +92,7 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
         for (let y = 0; y < grid[0].length; y++) {
             if (grid[x][y] == 2) {
 
-                const visionRange = 4;
+                const visionRange = 12;
                 const eat = 1; // herbe
                 const food = findNearestFood(grid, x, y, visionRange, eat);
 
@@ -116,7 +116,8 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                     if (dir === 2) nx--;
                     if (dir === 3) nx++;
                 }
-                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 2 && newGrid[nx][ny] != 2) {                    newGrid[nx][ny] = 2
+                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 2 && newGrid[nx][ny] != 2) {
+                    newGrid[nx][ny] = 2
                     if (grid[nx][ny] == eat) {
                         hungerGrid[nx][ny] = hungerGrid[x][y] - 5
                         if (hungerGrid[nx][ny] < 0) hungerGrid[nx][ny] = 0
@@ -149,7 +150,49 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                 hungerGrid[spawn.x][spawn.y] = 0;
             }
         }
-    }   
+    }
+
+    // reproduction loups
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
+
+            if (grid[x][y] === 3) {
+
+                // Reproduction uniquement si bien nourri
+                if (hungerGrid[x][y] >= 10) continue;
+
+                // Vérifier présence d'un autre loup proche
+                let hasPartner = false;
+                for (let dx = -3; dx <= 3; dx++) {
+                    for (let dy = -3; dy <= 3; dy++) {
+                        if (dx === 0 && dy === 0) continue;
+                        const nx = x + dx;
+                        const ny = y + dy;
+                        if (
+                            nx >= 0 && ny >= 0 &&
+                            nx < grid.length && ny < grid[0].length &&
+                            grid[nx][ny] === 3
+                        ) {
+                            hasPartner = true;
+                            break;
+                        }
+                    }
+                    if (hasPartner) break;
+                }
+
+                if (!hasPartner) continue;
+
+                // Chance de reproduction
+                if (Math.random() > 0.01) continue; // 1%
+
+                const spawn = findEmptyCellAround(newGrid, x, y, 1);
+                if (!spawn) continue;
+
+                newGrid[spawn.x][spawn.y] = 3;
+                hungerGrid[spawn.x][spawn.y] = 0;
+            }
+        }
+    }
 
     // déplacement Loup
     for (let x = 0; x < grid.length; x++) {
@@ -167,20 +210,23 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                 let ny = y;
 
                 if (food) {
-                    if (food.x > x) nx++;
-                    else if (food.x < x) nx--;
+                    // Mouvement diagonal :  2 cases par tour
+                    const dx = food.x > x ? 1 : (food.x < x ? -1 : 0);
+                    const dy = food.y > y ? 1 : (food.y < y ? -1 : 0);
 
-                    if (food.y > y) ny++;
-                    else if (food.y < y) ny--;
+                    nx += dx;
+                    ny += dy;
                 } else {
-                    // déplacement aléatoire si aucune herbe visible
+                    // déplacement aléatoire
                     const dir = Math.floor(Math.random() * 4);
                     if (dir === 0) ny--;
                     if (dir === 1) ny++;
                     if (dir === 2) nx--;
                     if (dir === 3) nx++;
                 }
-                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 3 && newGrid[nx][ny] != 3) {                    newGrid[nx][ny] = 3
+
+                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 3 && newGrid[nx][ny] != 3) {
+                    newGrid[nx][ny] = 3
                     if (grid[nx][ny] == eat) {
                         hungerGrid[nx][ny] = 0
                     } else {
