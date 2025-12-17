@@ -204,7 +204,7 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                 const food = findNearestFood(grid, x, y, visionRange, eat);
 
                 newGrid[x][y] = 0
-                if (hungerGrid[x][y] >= 35) continue
+                if (hungerGrid[x][y] >= 60) continue
 
                 let nx = x;
                 let ny = y;

@@ -52,7 +52,7 @@
                 if (nweedsClose > 0) {
                     // Bonus si entouré (favorise le remplissage compact)
                     let fillBonus = nweedsClose >= 3 ? 0.5 : 0;
-                    const propagationChance = (nweedsClose * 0.15) + fillBonus;
+                    const propagationChance = (nweedsClose * 0.025) + fillBonus;
                     if (Math.random() < propagationChance) {
                         return 1;
                     }
