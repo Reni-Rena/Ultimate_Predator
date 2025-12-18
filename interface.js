@@ -4,9 +4,9 @@ const ctx = canvas.getContext('2d');
 const iterationCountElement = document.getElementById('iterationCount');
 const statistiqueCountElement = document.getElementById('statistiqueCount');
 
-const gridSizeX = 100; // Largeur de la grille
-const gridSizeY = 100; // Hauteur de la grille
-const cellSize = 10; // Taille de chaque cellule en pixels
+const gridSizeX = 50;
+const gridSizeY = 50;
+const cellSize = 10;
 var isRunning = false
 var speed = 5
 
@@ -15,72 +15,70 @@ var i = 0
 canvas.width = gridSizeX * cellSize;
 canvas.height = gridSizeY * cellSize;
 
-var grid = buildGrid(gridSizeX, gridSizeY)  
+var grid = buildGrid(gridSizeX, gridSizeY)
 var newGrid = buildGrid(gridSizeX, gridSizeY)
-var hungerGrid = buildGrid(gridSizeX, gridSizeY)
+var animals = []; // Liste des animaux
 
 const toggleButton = document.getElementById('toggleButton');
 const resetButton = document.getElementById('resetButton');
 const speedSlider = document.getElementById('speedSlider');
 
 toggleButton.addEventListener('click', () => {
-    isRunning = !isRunning; // Basculer l'état de la simulation
+    isRunning = !isRunning;
     if (isRunning) {
-        runSimulation(); // Démarrer la simulation si elle était arrêtée
-    } 
+        runSimulation();
+    }
 });
 
 resetButton.addEventListener('click', () => {
-    // stop la simulation
-    isRunning = false
-
-    // reset la grille
     grid = buildGrid(gridSizeX, gridSizeY)
-    drawGrid(grid, cellSize);
-
-    // reset le texte
+    animals = [];
     i = 0
-    iterationCountElement.innerText = `Itération: ${++i}`;
+    isRunning = false
+    drawGrid(grid, cellSize);
 });
 
 speedSlider.addEventListener('input', () => {
     speed = speedSlider.value;
 });
-    
 
 drawGrid(grid, cellSize);
 
-
-canvas.addEventListener('click', function(event) {
-    if (isRunning){
+canvas.addEventListener('click', function (event) {
+    if (isRunning) {
         isRunning = false
+        return
     }
-    console.log("mlk")
+
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    // Convertir la position du clic en indices de grille
-    const gridX = Math.floor(x / cellSize);
-    const gridY = Math.floor(y / cellSize);
+    const gridX = Math.floor(y / cellSize);
+    const gridY = Math.floor(x / cellSize);
 
-    // Inverser l'état de la cellule
     if (gridX >= 0 && gridX < gridSizeX && gridY >= 0 && gridY < gridSizeY) {
-        grid[gridY][gridX]++
-        if (grid[gridY][gridX] > 3) grid[gridY][gridX] = 0
+        grid[gridX][gridY]++
+
+        // Créer animal si nécessaire
+        if (grid[gridX][gridY] == 2) {
+            animals.push(new Rabbit(gridX, gridY));
+        } else if (grid[gridX][gridY] == 3) {
+            animals.push(new Wolf(gridX, gridY));
+        } else if (grid[gridX][gridY] > 3) {
+            grid[gridX][gridY] = 0
+        }
     }
 
-    // Redessiner la grille
     drawGrid(grid, cellSize);
 });
-
 
 function runSimulation() {
     if (!isRunning) return;
 
-    [grid, newGrid] = updateGrid(grid, newGrid, updateRule);
+    [grid, newGrid, animals] = updateGrid(grid, newGrid, animals, updateRule);
     drawGrid(grid, cellSize);
-    
+
     setTimeout(() => {
         animationFrameId = requestAnimationFrame(runSimulation);
         iterationCountElement.innerText = `Itération: ${++i}`;
