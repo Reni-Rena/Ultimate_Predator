@@ -30,7 +30,7 @@ function findNearestFood(grid, x, y, visionRange, food) {
     return closest;
 }
 
-function hasNearbyRabbit(grid, x, y, range = 3) {
+function hasNearbyMate(grid, x, y, race, range) {
     for (let dx = -range; dx <= range; dx++) {
         for (let dy = -range; dy <= range; dy++) {
             if (dx === 0 && dy === 0) continue;
@@ -41,7 +41,7 @@ function hasNearbyRabbit(grid, x, y, range = 3) {
             if (
                 nx >= 0 && ny >= 0 &&
                 nx < grid.length && ny < grid[0].length &&
-                grid[nx][ny] === 2
+                grid[nx][ny] === race
             ) {
                 return true;
             }
@@ -49,7 +49,8 @@ function hasNearbyRabbit(grid, x, y, range = 3) {
     }
     return false;
 }
-function findEmptyCellAround(grid, x, y, range = 1) {
+
+function findEmptyCellAround(grid, x, y, range) {
     const emptyCells = [];
 
     for (let dx = -range; dx <= range; dx++) {
@@ -70,10 +71,67 @@ function findEmptyCellAround(grid, x, y, range = 1) {
     if (emptyCells.length === 0) return null;
     return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
+
+function mooveRace(grid, newGrid, race, eat, hungerMax, visionRange, speed = 1) {
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
+            if (grid[x][y] == race) {
+
+                const food = findNearestFood(grid, x, y, visionRange, eat);
+
+                newGrid[x][y] = 0
+                if (hungerGrid[x][y] >= hungerMax) continue
+
+                let nx = x;
+                let ny = y;
+
+                if (food) {
+                    if (food.x > x) {
+                        if (food.x - x == 1) nx++;
+                        else nx += speed;
+                    }
+                    else if (food.x < x) {
+                        if (x - food.x == 1) nx--;
+                        else nx -= speed;
+                    }
+
+                    if (food.y > y) {
+                        if (food.y - y == 1) ny++;
+                        else ny += speed;
+                    } 
+                    else if (food.y < y) {
+                        if (y - food.y == 1) ny--;
+                        else ny -= speed;
+                    }
+
+                } else {
+                    // déplacement aléatoire si aucune herbe visible
+                    const dir = Math.floor(Math.random() * 4);
+                    if (dir === 0) ny -= speed;
+                    if (dir === 1) ny += speed;
+                    if (dir === 2) nx -= speed;
+                    if (dir === 3) nx += speed;
+                }
+                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != race && newGrid[nx][ny] != race && !hasNearbyMate(grid, x, y, race + 1 , 1)) {
+                    newGrid[nx][ny] = race
+                    if (grid[nx][ny] == eat) {
+                        hungerGrid[nx][ny] = hungerGrid[x][y] - 5
+                        if (hungerGrid[nx][ny] < 0) hungerGrid[nx][ny] = 0
+                    } else {
+                        hungerGrid[nx][ny] = hungerGrid[x][y] + 1
+                    }
+                    hungerGrid[x][y] = 0
+                } else {
+                    newGrid[x][y] = race
+                    hungerGrid[x][y] += 1
+                }
+            }
+        }
+    }
+    return [grid, newGrid] 
+}
+
 function updateGrid(grid, newGrid, automataRuleCallback) {
-    const rabbits = grid.flat().filter(cell => cell === 2).length;
-    const wolf = grid.flat().filter(cell => cell === 3).length;
-    console.log("Lapins :", rabbits, " || Wolf :", wolf);
 
     // propagation naturel
     for (let x = 0; x < grid.length; x++) {
@@ -87,67 +145,31 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
             }
         }
     }
+
     // déplacement lapin
-    for (let x = 0; x < grid.length; x++) {
-        for (let y = 0; y < grid[0].length; y++) {
-            if (grid[x][y] == 2) {
+    [grid, newGrid] = mooveRace(grid, newGrid, 2, 1, 20, 12, 1);
+    [grid, newGrid] = mooveRace(grid, newGrid, 3, 2, 40, 35, 2);
 
-                const visionRange = 12;
-                const eat = 1; // herbe
-                const food = findNearestFood(grid, x, y, visionRange, eat);
-
-                newGrid[x][y] = 0
-                if (hungerGrid[x][y] >= 20) continue
-
-                let nx = x;
-                let ny = y;
-
-                if (food) {
-                    if (food.x > x) nx++;
-                    else if (food.x < x) nx--;
-
-                    if (food.y > y) ny++;
-                    else if (food.y < y) ny--;
-                } else {
-                    // déplacement aléatoire si aucune herbe visible
-                    const dir = Math.floor(Math.random() * 4);
-                    if (dir === 0) ny--;
-                    if (dir === 1) ny++;
-                    if (dir === 2) nx--;
-                    if (dir === 3) nx++;
-                }
-                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 2 && newGrid[nx][ny] != 2) {
-                    newGrid[nx][ny] = 2
-                    if (grid[nx][ny] == eat) {
-                        hungerGrid[nx][ny] = hungerGrid[x][y] - 5
-                        if (hungerGrid[nx][ny] < 0) hungerGrid[nx][ny] = 0
-                    } else {
-                        hungerGrid[nx][ny] = hungerGrid[x][y] + 1
-                    }
-                    hungerGrid[x][y] = 0
-                } else {
-                    newGrid[x][y] = 2
-                    hungerGrid[x][y] += 1
-                }
-            }
-        }
-    }
     // reproduction lapin
     for (let x = 0; x < grid.length; x++) {
         for (let y = 0; y < grid[0].length; y++) {
 
             if (grid[x][y] === 2) {
+                if (hungerGrid[x][y] > 10) continue;
 
-                if (!hasNearbyRabbit(grid, x, y, 3)) continue;
+                const mateRange = 3;
+                const mateRace = 2;
+                if (!hasNearbyMate(grid, x, y, mateRace, mateRange)) continue;
 
                 // chance pour éviter explosion de population
-                if (Math.random() > 0.02) continue; // 2%
+                if (Math.random() > 0.02) continue;
 
                 const spawn = findEmptyCellAround(newGrid, x, y, 1);
                 if (!spawn) continue;
 
                 newGrid[spawn.x][spawn.y] = 2;
-                hungerGrid[spawn.x][spawn.y] = 0;
+                hungerGrid[spawn.x][spawn.y] = 5;
+                hungerGrid[x][y] += 5
             }
         }
     }
@@ -183,7 +205,7 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                 if (!hasPartner) continue;
 
                 // Chance de reproduction
-                if (Math.random() > 0.01) continue; // 1%
+                if (Math.random() > 0.01) continue;
 
                 const spawn = findEmptyCellAround(newGrid, x, y, 1);
                 if (!spawn) continue;
@@ -194,52 +216,6 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
         }
     }
 
-    // déplacement Loup
-    for (let x = 0; x < grid.length; x++) {
-        for (let y = 0; y < grid[0].length; y++) {
-            if (grid[x][y] == 3) {
-
-                const visionRange = 25;
-                const eat = 2;
-                const food = findNearestFood(grid, x, y, visionRange, eat);
-
-                newGrid[x][y] = 0
-                if (hungerGrid[x][y] >= 60) continue
-
-                let nx = x;
-                let ny = y;
-
-                if (food) {
-                    // Mouvement diagonal :  2 cases par tour
-                    const dx = food.x > x ? 1 : (food.x < x ? -1 : 0);
-                    const dy = food.y > y ? 1 : (food.y < y ? -1 : 0);
-
-                    nx += dx;
-                    ny += dy;
-                } else {
-                    // déplacement aléatoire
-                    const dir = Math.floor(Math.random() * 4);
-                    if (dir === 0) ny--;
-                    if (dir === 1) ny++;
-                    if (dir === 2) nx--;
-                    if (dir === 3) nx++;
-                }
-
-                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != 3 && newGrid[nx][ny] != 3) {
-                    newGrid[nx][ny] = 3
-                    if (grid[nx][ny] == eat) {
-                        hungerGrid[nx][ny] = 0
-                    } else {
-                        hungerGrid[nx][ny] = hungerGrid[x][y] + 1
-                    }
-                    hungerGrid[x][y] = 0
-                } else {
-                    newGrid[x][y] = 3
-                    hungerGrid[x][y] += 1
-                }
-            }
-        }
-    }
     return [newGrid, grid]
 }
 

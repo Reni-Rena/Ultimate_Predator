@@ -2,6 +2,7 @@ let animationFrameId = null
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const iterationCountElement = document.getElementById('iterationCount');
+const statistiqueCountElement = document.getElementById('statistiqueCount');
 
 const gridSizeX = 100; // Largeur de la grille
 const gridSizeY = 100; // Hauteur de la grille
@@ -53,7 +54,6 @@ drawGrid(grid, cellSize);
 canvas.addEventListener('click', function(event) {
     if (isRunning){
         isRunning = false
-        return
     }
     console.log("mlk")
     const rect = canvas.getBoundingClientRect();
@@ -84,5 +84,8 @@ function runSimulation() {
     setTimeout(() => {
         animationFrameId = requestAnimationFrame(runSimulation);
         iterationCountElement.innerText = `Itération: ${++i}`;
+        const rabbits = grid.flat().filter(cell => cell === 2).length;
+        const wolf = grid.flat().filter(cell => cell === 3).length;
+        statistiqueCountElement.innerText = `Rabbits : ${rabbits}   ||   Wolf : ${wolf}`;
     }, 1000 / speed);
 }
