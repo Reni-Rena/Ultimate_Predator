@@ -112,7 +112,7 @@ function mooveRace(grid, newGrid, race, eat, hungerMax, visionRange, speed = 1) 
                     if (dir === 2) nx -= speed;
                     if (dir === 3) nx += speed;
                 }
-                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != race && newGrid[nx][ny] != race) {
+                if (nx >= 0 && ny >= 0 && nx < grid.length && ny < grid[0].length && grid[nx][ny] != race && newGrid[nx][ny] != race && !hasNearbyMate(grid, x, y, race + 1 , 1)) {
                     newGrid[nx][ny] = race
                     if (grid[nx][ny] == eat) {
                         hungerGrid[nx][ny] = hungerGrid[x][y] - 5
@@ -168,7 +168,7 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
                 if (!spawn) continue;
 
                 newGrid[spawn.x][spawn.y] = 2;
-                hungerGrid[spawn.x][spawn.y] = 0;
+                hungerGrid[spawn.x][spawn.y] = 5;
                 hungerGrid[x][y] += 5
             }
         }
