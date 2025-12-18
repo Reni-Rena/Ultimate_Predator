@@ -199,6 +199,25 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
             target = findNearestFood(newGrid, animal.x, animal.y, visionRange, foodType);
         }
 
+        // Si pas de cible et a faim, se déplacer aléatoirement
+        if (!target && animal.isHungry()) {
+            const dir = Math.floor(Math.random() * 4);
+            const speed = animal.getSpeed();
+            if (dir === 0) ny -= speed;
+            if (dir === 1) ny += speed;
+            if (dir === 2) nx -= speed;
+            if (dir === 3) nx += speed;
+
+            nx = Math.max(0, Math.min(grid.length - 1, nx));
+            ny = Math.max(0, Math.min(grid[0].length - 1, ny));
+
+            animal.incrementHunger();
+            animal.move(nx, ny);
+            newGrid[nx][ny] = animal.type;
+            newAnimals.push(animal);
+            continue;
+        }
+
         // Si pas de cible (rassasié et pas de partenaire), ne bouge pas
         if (!target) {
             animal.incrementHunger();
