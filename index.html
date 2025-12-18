@@ -16,6 +16,7 @@
         <input type="range" id="speedSlider" min="1" max="60" value="5">
     </div>
     <div id="iterationCount">Itération: 0</div>
+    <div id="statistiqueCount">Itération: 0</div>
     <canvas id="canvas"></canvas>
     <script src="automata.js"></script>
     <script src="interface.js"></script>
@@ -44,7 +45,7 @@
             // Si c'est du vide (case 0)
             if (grid[iRow][iCol] == 0) {
                 // Si trop d'herbe dans la zone, bloquer toute croissance
-                if (nweeds >= 12) {
+                if (nweeds >= 50) {
                     return 0;
                 }
 
@@ -61,11 +62,6 @@
                 // Germination spontanée rare
                 const germinationChance = 0.0001;
                 return Math.random() < germinationChance ? 1 : 0;
-            }
-
-            // Si c'est un lapin en mouvement (état 3 → 2)
-            if (grid[iRow][iCol] == 3) {
-                return 2;
             }
 
             // Sinon garder l'état actuel
