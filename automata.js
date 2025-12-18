@@ -147,8 +147,9 @@ function updateGrid(grid, newGrid, automataRuleCallback) {
     }
 
     // déplacement lapin
-    [newGrid, grid] = mooveRace(grid, newGrid, 2, 1, 20, 12, 1);
-    [newGrid, grid] = mooveRace(grid, newGrid, 3, 2, 40, 35, 2);
+    [grid, newGrid] = mooveRace(grid, newGrid, 2, 1, 20, 12, 1);
+    [grid, newGrid] = mooveRace(grid, newGrid, 3, 2, 40, 35, 2);
+
     // reproduction lapin
     for (let x = 0; x < grid.length; x++) {
         for (let y = 0; y < grid[0].length; y++) {
