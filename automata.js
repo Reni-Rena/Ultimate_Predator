@@ -319,14 +319,48 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
             baby = new Wolf(spawn.x, spawn.y);
         }
 
+        baby = inheritStat(animal, partner, baby)
         newGrid[spawn.x][spawn.y] = baby.type;
         newAnimals.push(baby);
+        if (baby.type == 3) {
+        console.log(
+            "Baby stats:",
+            baby.type === 2 ? "Rabbit" : "Wolf",
+            baby.maxHunger,
+            baby.visionRange,
+            baby.speed,
+            baby.reproductionCooldownMax
+        );
+        }
+        
 
         animal.setReproductionCooldown();
         partner.setReproductionCooldown();
     }
 
     return [newGrid, grid, newAnimals];
+}
+
+function inheritStat(a, b, baby, mutationChance = 0.1) {
+
+    baby.maxHunger = Math.random() < 0.5 ? a.maxHunger : b.maxHunger;
+    baby.visionRange = Math.random() < 0.5 ? a.visionRange : b.visionRange;
+    baby.speed = Math.random() < 0.5 ? a.speed : b.speed;
+    baby.reproductionCooldownMax = Math.random() < 0.5 ? a.reproductionCooldownMax : b.reproductionCooldownMax;
+
+    // mutation
+    if (Math.random() < mutationChance) {
+        const rand = Math.floor(Math.random() * 4);
+        if (rand === 0) baby.maxHunger += Math.random() < 0.5 ? -1 : 1;
+        if (rand === 1) baby.visionRange += Math.random() < 0.5 ? -1 : 1;
+        if (rand === 2) baby.speed += Math.random() < 0.5 ? -1 : 1;
+        if (rand === 3) baby.reproductionCooldownMax += Math.random() < 0.5 ? -1 : 1;
+    }
+
+    baby.speed = Math.max(1, baby.speed);
+    baby.reproductionCooldownMax = Math.max(5, baby.reproductionCooldownMax);
+
+    return baby;
 }
 
 function drawGrid(grid, cellSize) {
