@@ -164,6 +164,7 @@ function updateCharts() {
 
 const toggleButton = document.getElementById('toggleButton');
 const resetButton = document.getElementById('resetButton');
+const startButton = document.getElementById('startButton');
 const speedSlider = document.getElementById('speedSlider');
 
 toggleButton.addEventListener('click', () => {
@@ -187,6 +188,17 @@ resetButton.addEventListener('click', () => {
 
     drawGrid(grid, cellSize);
 });
+
+startButton.addEventListener('click', () => {
+    isRunning = false;
+
+    grid = buildGrid(gridSizeX, gridSizeY); // reset propre
+    newGrid = buildGrid(gridSizeX, gridSizeY);
+
+    initAnimals(grid, 150, 5)
+    drawGrid(grid, cellSize);
+});
+
 
 speedSlider.addEventListener('input', () => {
     speed = speedSlider.value;
@@ -225,6 +237,7 @@ canvas.addEventListener('click', function (event) {
 function runSimulation() {
     if (!isRunning) return;
 
+    newGrid = buildGrid(gridSizeX, gridSizeY);
     [grid, newGrid, animals] = updateGrid(grid, newGrid, animals, updateRule);
     drawGrid(grid, cellSize);
 

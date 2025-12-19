@@ -2,6 +2,35 @@ function buildGrid(gridSizeX, gridSizeY) {
     let grid = Array.from({ length: gridSizeY }, () => Array(gridSizeX).fill(0));
     return grid
 }
+function initAnimals(grid, rabbitCount, wolfCount) {
+    let weedCount = 500
+    // placer herbe
+    for (let i = 0; i < weedCount; i++) {
+        const cell = getRandomEmptyCell(grid);
+        if (!cell) break;
+        grid[cell.x][cell.y] = 1;
+    }
+
+    // placer lapins
+    for (let i = 0; i < rabbitCount; i++) {
+        let baby;
+        const cell = getRandomEmptyCell(grid);
+        if (!cell) break;
+        baby = new Rabbit(cell.x, cell.y);
+        animals.push(baby);
+    }
+
+    // placer loups
+    for (let i = 0; i < wolfCount; i++) {
+        let baby;
+        const cell = getRandomEmptyCell(grid);
+        if (!cell) break;
+        baby = new Wolf(cell.x, cell.y);
+        animals.push(baby);
+    }
+    return grid
+}
+
 
 function findNearestFood(grid, x, y, visionRange, food) {
     let closest = null;
@@ -312,4 +341,20 @@ function drawGrid(grid, cellSize) {
             ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
         }
     }
+}
+
+function getRandomEmptyCell(grid) {
+    const emptyCells = [];
+
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
+            if (grid[x][y] === 0) {
+                emptyCells.push({ x, y });
+            }
+        }
+    }
+
+    if (emptyCells.length === 0) return null;
+
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
