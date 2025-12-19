@@ -4,7 +4,7 @@ class Animal {
         this.y = y;
         this.type = type;
         this.maxHunger = 0;
-        this.hunger = 0;
+        this.hunger = 5;
         this.reproductionCooldown = 0;
         this.iterationsSurvived = 0;
         this.foodEaten = 0;
@@ -15,8 +15,12 @@ class Animal {
     }
 
     eat() {
-        this.hunger = 0;
+        this.hunger = Math.max(0, this.hunger - this.getFoodValue());
         this.foodEaten++;
+    }
+
+    getFoodValue() {
+        return 0;
     }
 
     incrementHunger(hg = 0) {
@@ -90,30 +94,38 @@ class Animal {
 class Rabbit extends Animal {
     constructor(x, y) {
         super(x, y, 2);
-        this.maxHunger = 20;
+        this.maxHunger = 30;
         this.visionRange = 8;
         this.foodType = 1;  // herbe
         this.speed = 1;
-        this.reproductionCooldownMax = 15; // n tours avant de pouvoir se reproduire à nouveau
+        this.reproductionCooldownMax = 15;
+    }
+
+    getFoodValue() {
+        return 5; // L'herbe retire n de faim
     }
 
     canReproduce() {
-        return this.reproductionCooldown === 0 && Math.random() < 0.5;
+        return this.reproductionCooldown === 0 && this.hunger < 5 && Math.random() < 0.5;
     }
 }
 
 class Wolf extends Animal {
     constructor(x, y) {
         super(x, y, 3);
-        this.maxHunger = 35;
+        this.maxHunger = 70;
         this.visionRange = 25;
         this.foodType = 2;  // lapin
         this.speed = 2;
-        this.reproductionCooldownMax = 75; // n tours avant de pouvoir se reproduire à nouveau
+        this.reproductionCooldownMax = 75;
+    }
+
+    getFoodValue() {
+        return 20; // Un lapin retire n de faim
     }
 
     isHungry() {
-        return this.hunger >= 5; // Ne chasse que si faim >= 5
+        return this.hunger >= 5;
     }
 
     canReproduce() {
