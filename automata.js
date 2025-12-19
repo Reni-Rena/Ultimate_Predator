@@ -111,6 +111,22 @@ function findNearestPartner(animals, x, y, type, range = 5) {
     return closest;
 }
 
+function findNearestThreat(animals, x, y, threatType, visionRange) {
+    let closest = null;
+    let minDist = Infinity;
+
+    for (let animal of animals) {
+        if (animal.type !== threatType) continue;
+
+        const dist = Math.abs(animal.x - x) + Math.abs(animal.y - y);
+        if (dist <= visionRange && dist < minDist) {
+            minDist = dist;
+            closest = animal;
+        }
+    }
+    return closest;
+}
+
 function updateGrid(grid, newGrid, animals, automataRuleCallback) {
     // Réinitialiser newGrid
     for (let x = 0; x < grid.length; x++) {
@@ -145,6 +161,31 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
         let target = null;
         const visionRange = animal.getVisionRange();
 
+        // Priorité 0 : Fuir si un loup est dans le champ de vision
+        const threat = findNearestThreat(animals, animal.x, animal.y, 3, visionRange);
+        if (threat) {
+            // S'éloigner du loup
+            const dx = animal.x - threat.x;
+            const dy = animal.y - threat.y;
+
+            // Normaliser la direction
+            const dirX = dx > 0 ? 1 : (dx < 0 ? -1 : 0);
+            const dirY = dy > 0 ? 1 : (dy < 0 ? -1 : 0);
+
+            const speed = animal.getSpeed();
+            nx = animal.x + (dirX * speed);
+            ny = animal.y + (dirY * speed);
+
+            nx = Math.max(0, Math.min(grid.length - 1, nx));
+            ny = Math.max(0, Math.min(grid[0].length - 1, ny));
+
+            animal.incrementHunger();
+            animal.move(nx, ny);
+            newGrid[nx][ny] = animal.type;
+            newAnimals.push(animal);
+            continue;
+        }
+
         // Priorité 1 : Chercher un partenaire si peut se reproduire
         if (animal.canReproduce()) {
             const partner = findNearestPartner(animals, animal.x, animal.y, animal.type, visionRange);
@@ -153,34 +194,51 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
             }
         }
 
-        // Priorité 2 : Chercher de la nourriture
-        if (!target) {
+        // Priorité 2 : Chercher de la nourriture SI a faim
+        if (!target && animal.hunger > 0) {
             const foodType = animal.getFood();
             target = findNearestFood(grid, animal.x, animal.y, visionRange, foodType);
         }
 
-        // Se déplacer vers la cible
-        if (target) {
-            const speed = animal.getSpeed();
-            for (let step = 0; step < speed; step++) {
-                const dx = target.x > nx ? 1 : (target.x < nx ? -1 : 0);
-                const dy = target.y > ny ? 1 : (target.y < ny ? -1 : 0);
-
-                if (dx !== 0 || dy !== 0) {
-                    nx += dx;
-                    ny += dy;
-                }
-
-                if (nx === target.x && ny === target.y) break;
-            }
-        } else {
-            // Déplacement aléatoire
+        // Si pas de cible et a faim, se déplacer aléatoirement
+        if (!target && animal.hunger > 0) {
             const dir = Math.floor(Math.random() * 4);
             const speed = animal.getSpeed();
             if (dir === 0) ny -= speed;
             if (dir === 1) ny += speed;
             if (dir === 2) nx -= speed;
             if (dir === 3) nx += speed;
+
+            nx = Math.max(0, Math.min(grid.length - 1, nx));
+            ny = Math.max(0, Math.min(grid[0].length - 1, ny));
+
+            animal.incrementHunger();
+            animal.move(nx, ny);
+            newGrid[nx][ny] = animal.type;
+            newAnimals.push(animal);
+            continue;
+        }
+
+        // Si pas de cible (rassasié et pas de partenaire), ne bouge pas
+        if (!target) {
+            animal.incrementHunger();
+            newGrid[animal.x][animal.y] = animal.type;
+            newAnimals.push(animal);
+            continue;
+        }
+
+        // Se déplacer vers la cible
+        const speed = animal.getSpeed();
+        for (let step = 0; step < speed; step++) {
+            const dx = target.x > nx ? 1 : (target.x < nx ? -1 : 0);
+            const dy = target.y > ny ? 1 : (target.y < ny ? -1 : 0);
+
+            if (dx !== 0 || dy !== 0) {
+                nx += dx;
+                ny += dy;
+            }
+
+            if (nx === target.x && ny === target.y) break;
         }
 
         nx = Math.max(0, Math.min(grid.length - 1, nx));
@@ -188,7 +246,7 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
 
         if (newGrid[nx][ny] !== animal.type) {
             const foodType = animal.getFood();
-            if (grid[nx][ny] === foodType) {
+            if (grid[nx][ny] === foodType && animal.hunger > 0) {
                 animal.eat();
             } else {
                 animal.incrementHunger();
@@ -216,7 +274,7 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
 
         // Priorité 1 : Chercher un partenaire si peut se reproduire
         if (animal.canReproduce()) {
-            const partner = findNearestPartner(animals, animal.x, animal.y, animal.type, visionRange);
+            const partner = findNearestPartner(animals, animal.x, animal.y, animal.type, visionRange+10);
             if (partner) {
                 target = { x: partner.x, y: partner.y };
             }
