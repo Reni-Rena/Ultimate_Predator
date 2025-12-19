@@ -19,8 +19,11 @@ class Animal {
         this.foodEaten++;
     }
 
-    incrementHunger() {
-        this.hunger += this.speed;
+    incrementHunger(hg = 0) {
+        if (hg > 0)
+            this.hunger += hg;
+        else
+            this.hunger += this.speed;
     }
 
     incrementIterations() {

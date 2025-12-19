@@ -320,19 +320,11 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
         }
 
         baby = inheritStat(animal, partner, baby)
+        animal.incrementHunger(5);
+        partner.incrementHunger(5);
         newGrid[spawn.x][spawn.y] = baby.type;
         newAnimals.push(baby);
-        if (baby.type == 3) {
-        console.log(
-            "Baby stats:",
-            baby.type === 2 ? "Rabbit" : "Wolf",
-            baby.maxHunger,
-            baby.visionRange,
-            baby.speed,
-            baby.reproductionCooldownMax
-        );
-        }
-        
+
 
         animal.setReproductionCooldown();
         partner.setReproductionCooldown();

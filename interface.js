@@ -4,8 +4,8 @@ const ctx = canvas.getContext('2d');
 const iterationCountElement = document.getElementById('iterationCount');
 const statistiqueCountElement = document.getElementById('statistiqueCount');
 
-const gridSizeX = 200;
-const gridSizeY = 200;
+const gridSizeX = 100;
+const gridSizeY = 100;
 const cellSize = 5;
 var isRunning = false
 var speed = 5
@@ -260,7 +260,10 @@ function updateBestAnimals() {
             <strong>🏆 Meilleur Lapin:</strong><br>
             Survécu:  ${bestRabbit.iterationsSurvived} tours<br>
             Nourriture mangée: ${bestRabbit.foodEaten}<br>
-            Faim actuelle: ${bestRabbit.hunger}
+            Faim actuelle: ${bestRabbit.hunger}<br>
+            Faim maximal: ${bestRabbit.maxHunger}<br>
+            Distance de vue: ${bestRabbit.visionRange}<br>
+            Vitesse: ${bestRabbit.speed}
         `;
     } else {
         bestRabbitElement.innerHTML = '<strong>🏆 Meilleur Lapin: </strong> Aucun';
@@ -271,10 +274,59 @@ function updateBestAnimals() {
             <strong>🏆 Meilleur Loup:</strong><br>
             Survécu: ${bestWolf.iterationsSurvived} tours<br>
             Nourriture mangée:  ${bestWolf.foodEaten}<br>
-            Faim actuelle: ${bestWolf.hunger}
+            Faim actuelle: ${bestWolf.hunger}<br>
+            Faim maximal: ${bestWolf.maxHunger}<br>
+            Distance de vue: ${bestWolf.visionRange}<br>
+            Vitesse: ${bestWolf.speed}
         `;
     } else {
         bestWolfElement.innerHTML = '<strong>🏆 Meilleur Loup:</strong> Aucun';
+    }
+}
+
+function updateAverageStats() {
+    const rabbits = animals.filter(a => a.type === 2);
+    const wolves = animals.filter(a => a.type === 3);
+
+    const avgRabbitElement = document.getElementById('avgRabbit');
+    const avgWolfElement = document.getElementById('avgWolf');
+
+    if (rabbits.length > 0) {
+        const avgIterations = (rabbits.reduce((sum, r) => sum + r.iterationsSurvived, 0) / rabbits.length).toFixed(2);
+        const avgFoodEaten = (rabbits.reduce((sum, r) => sum + r.foodEaten, 0) / rabbits.length).toFixed(2);
+        const avgHunger = (rabbits.reduce((sum, r) => sum + r.hunger, 0) / rabbits.length).toFixed(2);
+
+        avgRabbitElement.innerHTML = `
+            <strong>📊 Statistiques Moyennes Lapins:</strong><br>
+            Population:  ${rabbits.length}<br>
+            Survécu moyen: ${avgIterations} tours<br>
+            Nourriture mangée moyenne: ${avgFoodEaten}<br>
+            Faim moyenne: ${avgHunger}<br>
+            Faim maximale: ${rabbits[0].getMaxHunger()}<br>
+            Distance de vue: ${rabbits[0].getVisionRange()}<br>
+            Vitesse: ${rabbits[0].getSpeed()}
+        `;
+    } else {
+        avgRabbitElement.innerHTML = '<strong>📊 Statistiques Moyennes Lapins:</strong> Aucun';
+    }
+
+    if (wolves.length > 0) {
+        const avgIterations = (wolves.reduce((sum, w) => sum + w.iterationsSurvived, 0) / wolves.length).toFixed(2);
+        const avgFoodEaten = (wolves.reduce((sum, w) => sum + w.foodEaten, 0) / wolves.length).toFixed(2);
+        const avgHunger = (wolves.reduce((sum, w) => sum + w.hunger, 0) / wolves.length).toFixed(2);
+
+        avgWolfElement.innerHTML = `
+            <strong>📊 Statistiques Moyennes Loups:</strong><br>
+            Population: ${wolves.length}<br>
+            Survécu moyen: ${avgIterations} tours<br>
+            Nourriture mangée moyenne:  ${avgFoodEaten}<br>
+            Faim moyenne:  ${avgHunger}<br>
+            Faim maximale:  ${wolves[0].getMaxHunger()}<br>
+            Distance de vue: ${wolves[0].getVisionRange()}<br>
+            Vitesse: ${wolves[0].getSpeed()}
+        `;
+    } else {
+        avgWolfElement.innerHTML = '<strong>📊 Statistiques Moyennes Loups:</strong> Aucun';
     }
 }
 
@@ -314,6 +366,7 @@ function runSimulation() {
 
             updateCharts();
             updateBestAnimals();
+            updateAverageStats();
         }
     }, 1000 / speed);
 }
