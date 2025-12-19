@@ -295,16 +295,19 @@ function updateAverageStats() {
         const avgIterations = (rabbits.reduce((sum, r) => sum + r.iterationsSurvived, 0) / rabbits.length).toFixed(2);
         const avgFoodEaten = (rabbits.reduce((sum, r) => sum + r.foodEaten, 0) / rabbits.length).toFixed(2);
         const avgHunger = (rabbits.reduce((sum, r) => sum + r.hunger, 0) / rabbits.length).toFixed(2);
+        const avgMaxHunger = (rabbits.reduce((sum, r) => sum + r.maxHunger, 0) / rabbits.length).toFixed(2);
+        const avgVisionRange = (rabbits.reduce((sum, r) => sum + r.visionRange, 0) / rabbits.length).toFixed(2);
+        const avgSpeed = (rabbits.reduce((sum, r) => sum + r.speed, 0) / rabbits.length).toFixed(2);
 
         avgRabbitElement.innerHTML = `
             <strong>📊 Statistiques Moyennes Lapins:</strong><br>
             Population:  ${rabbits.length}<br>
-            Survécu moyen: ${avgIterations} tours<br>
-            Nourriture mangée moyenne: ${avgFoodEaten}<br>
-            Faim moyenne: ${avgHunger}<br>
-            Faim maximale: ${rabbits[0].getMaxHunger()}<br>
-            Distance de vue: ${rabbits[0].getVisionRange()}<br>
-            Vitesse: ${rabbits[0].getSpeed()}
+            Survécu: ${avgIterations} tours<br>
+            Nourriture mangée: ${avgFoodEaten}<br>
+            Faim: ${avgHunger}<br>
+            Faim maximale: ${avgMaxHunger}<br>
+            Distance de vue: ${avgVisionRange}<br>
+            Vitesse: ${avgSpeed}
         `;
     } else {
         avgRabbitElement.innerHTML = '<strong>📊 Statistiques Moyennes Lapins:</strong> Aucun';
@@ -314,16 +317,19 @@ function updateAverageStats() {
         const avgIterations = (wolves.reduce((sum, w) => sum + w.iterationsSurvived, 0) / wolves.length).toFixed(2);
         const avgFoodEaten = (wolves.reduce((sum, w) => sum + w.foodEaten, 0) / wolves.length).toFixed(2);
         const avgHunger = (wolves.reduce((sum, w) => sum + w.hunger, 0) / wolves.length).toFixed(2);
+        const avgMaxHunger = (wolves.reduce((sum, w) => sum + w.maxHunger, 0) / wolves.length).toFixed(2);
+        const avgVisionRange = (wolves.reduce((sum, w) => sum + w.visionRange, 0) / wolves.length).toFixed(2);
+        const avgSpeed = (wolves.reduce((sum, w) => sum + w.speed, 0) / wolves.length).toFixed(2);
 
         avgWolfElement.innerHTML = `
             <strong>📊 Statistiques Moyennes Loups:</strong><br>
             Population: ${wolves.length}<br>
-            Survécu moyen: ${avgIterations} tours<br>
-            Nourriture mangée moyenne:  ${avgFoodEaten}<br>
-            Faim moyenne:  ${avgHunger}<br>
-            Faim maximale:  ${wolves[0].getMaxHunger()}<br>
-            Distance de vue: ${wolves[0].getVisionRange()}<br>
-            Vitesse: ${wolves[0].getSpeed()}
+            Survécu: ${avgIterations} tours<br>
+            Nourriture mangée: ${avgFoodEaten}<br>
+            Faim: ${avgHunger}<br>
+            Faim maximale: ${avgMaxHunger}<br>
+            Distance de vue: ${avgVisionRange}<br>
+            Vitesse: ${avgSpeed}
         `;
     } else {
         avgWolfElement.innerHTML = '<strong>📊 Statistiques Moyennes Loups:</strong> Aucun';

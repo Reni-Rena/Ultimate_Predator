@@ -22,31 +22,48 @@
     <div id="statistiqueCount">Rabbits : 0   ||   Wolf : 0</div>
 
     <div class="main-container">
-        <div class="left-panel">
+
+        <!-- COLONNE 1 : CANVAS -->
+        <div class="column canvas-column">
             <canvas id="canvas"></canvas>
         </div>
-        <div class="chart-container">
+
+        <!-- COLONNE 2 : LAPINS -->
+        <div class="column rabbits-column">
+            <h2>🐇 Lapins</h2>
+
             <div class="chart-box">
                 <canvas id="rabbitsChart"></canvas>
             </div>
+
+            <div id="bestRabbit" class="stats-box">
+                <strong>🏆 Meilleur Lapin :</strong> Aucun
+            </div>
+
+            <div id="avgRabbit" class="stats-box">
+                <strong>📊 Moyenne Lapins :</strong> Aucun
+            </div>
+        </div>
+
+        <!-- COLONNE 3 : LOUPS -->
+        <div class="column wolves-column">
+            <h2>🐺 Loups</h2>
+
             <div class="chart-box">
                 <canvas id="wolvesChart"></canvas>
             </div>
-            <div id="bestRabbit" class="stats-box">
-                <strong>🏆 Meilleur Lapin: </strong> Aucun
-            </div>
+
             <div id="bestWolf" class="stats-box">
-                <strong>🏆 Meilleur Loup:</strong> Aucun
-            </div>
-            <div id="avgRabbit" class="stats-box">
-                <strong>📊 Statistiques Moyennes Lapins:</strong> Aucun
+                <strong>🏆 Meilleur Loup :</strong> Aucun
             </div>
 
             <div id="avgWolf" class="stats-box">
-                <strong>📊 Statistiques Moyennes Loups: </strong> Aucun
+                <strong>📊 Moyenne Loups :</strong> Aucun
             </div>
         </div>
+
     </div>
+
 
     <script src="animals.js"></script>
     <script src="automata.js"></script>
