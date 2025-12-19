@@ -3,8 +3,13 @@ class Animal {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.maxHunger = 0;
         this.hunger = 0;
         this.reproductionCooldown = 0;
+        this.reproductionCooldownMax = 15
+        this.visionRange = 0;
+        this.foodType = 0;
+        this.speed = 0;
     }
 
     eat() {
@@ -12,7 +17,7 @@ class Animal {
     }
 
     incrementHunger() {
-        this.hunger++;
+        this.hunger += this.speed;
     }
 
     updateCooldown() {
@@ -22,7 +27,7 @@ class Animal {
     }
 
     setReproductionCooldown() {
-        this.reproductionCooldown = this.getReproductionCooldown();
+        this.reproductionCooldown = this.getReproductionCooldownMax();
     }
 
     isDead(grid, animals) {
@@ -34,23 +39,23 @@ class Animal {
     }
 
     getMaxHunger() {
-        return 0;
+        return this.maxHunger;
     }
 
     getVisionRange() {
-        return 0;
+        return this.visionRange;
     }
 
     getFood() {
-        return 0;
+        return this.foodType;
     }
 
     getSpeed() {
-        return 1;
+        return this.speed;
     }
 
-    getReproductionCooldown() {
-        return 0;
+    getReproductionCooldownMax() {
+        return this.reproductionCooldownMax;
     }
 
     canReproduce() {
@@ -66,22 +71,11 @@ class Animal {
 class Rabbit extends Animal {
     constructor(x, y) {
         super(x, y, 2);
-    }
-
-    getMaxHunger() {
-        return 20;
-    }
-
-    getVisionRange() {
-        return 8;
-    }
-
-    getFood() {
-        return 1;  // herbe
-    }
-
-    getReproductionCooldown() {
-        return 15; // n tours avant de pouvoir se reproduire à nouveau
+        this.maxHunger = 20;
+        this.visionRange = 8;
+        this.foodType = 1;  // herbe
+        this.speed = 1;
+        this.reproductionCooldownMax = 15; // n tours avant de pouvoir se reproduire Ã  nouveau
     }
 
     canReproduce() {
@@ -92,26 +86,11 @@ class Rabbit extends Animal {
 class Wolf extends Animal {
     constructor(x, y) {
         super(x, y, 3);
-    }
-
-    getMaxHunger() {
-        return 35;
-    }
-
-    getVisionRange() {
-        return 25;
-    }
-
-    getFood() {
-        return 2;  // lapin
-    }
-
-    getSpeed() {
-        return 2;
-    }
-
-    getReproductionCooldown() {
-        return 75; // n tours avant de pouvoir se reproduire à nouveau
+        this.maxHunger = 35;
+        this.visionRange = 25;
+        this.foodType = 2;  // lapin
+        this.speed = 2;
+        this.reproductionCooldownMax = 75; // n tours avant de pouvoir se reproduire Ã  nouveau
     }
 
     isHungry() {
