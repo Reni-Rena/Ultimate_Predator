@@ -17,7 +17,7 @@ class Animal {
     }
 
     eat() {
-        this.hunger = Math.max(0, this.hunger - this.getFoodValue());
+        this.hunger = this.hunger - this.getFoodValue();
         this.foodEaten++;
     }
 
@@ -29,7 +29,7 @@ class Animal {
         if (hg > 0)
             this.hunger += hg;
         else
-            this.hunger += Math.max(1, Math.round(this.speed+1/2));
+            this.hunger += Math.max(1, Math.round(this.speed+1/this.type));
     }
 
     incrementIterations() {
@@ -106,7 +106,7 @@ class Rabbit extends Animal {
         this.foodType = 1;  // herbe
         this.speed = 1;
         this.reproductionCooldownMax = 15;
-        this.maxAge = 100; // Meurt après 200 tours
+        this.maxAge = 200; // Meurt après n tours
 
     }
 
@@ -122,12 +122,12 @@ class Rabbit extends Animal {
 class Wolf extends Animal {
     constructor(x, y) {
         super(x, y, 3);
-        this.maxHunger = 70;
+        this.maxHunger = 100;
         this.visionRange = 30;
         this.foodType = 2;  // lapin
         this.speed = 2;
-        this.reproductionCooldownMax = 50;
-        this.maxAge = 300; // Meurt après 300 tours
+        this.reproductionCooldownMax = 30;
+        this.maxAge = 1000; // Meurt après n tours
 
     }
 
