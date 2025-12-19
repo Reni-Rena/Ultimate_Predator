@@ -4,8 +4,7 @@ const ctx = canvas.getContext('2d');
 const iterationCountElement = document.getElementById('iterationCount');
 const statistiqueCountElement = document.getElementById('statistiqueCount');
 
-const gridSizeX = 100;
-const gridSizeY = 100;
+const gridSizeX = gridSizeY = 200;
 const cellSize = 5;
 var isRunning = false
 var speed = 5

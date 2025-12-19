@@ -4,14 +4,16 @@ class Animal {
         this.y = y;
         this.type = type;
         this.maxHunger = 0;
-        this.hunger = 5;
+        this.hunger = 0;
         this.reproductionCooldown = 0;
         this.iterationsSurvived = 0;
         this.foodEaten = 0;
-        this.reproductionCooldownMax = 15
+        this.reproductionCooldownMax = 15;
         this.visionRange = 0;
         this.foodType = 0;
         this.speed = 0;
+        this.age = 0;
+        this.maxAge = 0;
     }
 
     eat() {
@@ -27,11 +29,12 @@ class Animal {
         if (hg > 0)
             this.hunger += hg;
         else
-            this.hunger += this.speed;
+            this.hunger += Math.max(1, Math.round(this.speed+1/2));
     }
 
     incrementIterations() {
         this.iterationsSurvived++;
+        this.age++;
     }
 
     updateCooldown() {
@@ -44,8 +47,12 @@ class Animal {
         this.reproductionCooldown = this.getReproductionCooldownMax();
     }
 
+    getMaxAge() {
+        return this.maxAge;
+    }
+
     isDead(grid, animals) {
-        return this.hunger >= this.getMaxHunger();
+        return this.hunger >= this.getMaxHunger() || this.age >= this.getMaxAge();
     }
 
     isHungry() {
@@ -99,6 +106,8 @@ class Rabbit extends Animal {
         this.foodType = 1;  // herbe
         this.speed = 1;
         this.reproductionCooldownMax = 15;
+        this.maxAge = 100; // Meurt après 200 tours
+
     }
 
     getFoodValue() {
@@ -114,14 +123,16 @@ class Wolf extends Animal {
     constructor(x, y) {
         super(x, y, 3);
         this.maxHunger = 70;
-        this.visionRange = 25;
+        this.visionRange = 30;
         this.foodType = 2;  // lapin
         this.speed = 2;
-        this.reproductionCooldownMax = 75;
+        this.reproductionCooldownMax = 50;
+        this.maxAge = 300; // Meurt après 300 tours
+
     }
 
     getFoodValue() {
-        return 20; // Un lapin retire n de faim
+        return 30; // Un lapin retire n de faim
     }
 
     isHungry() {
