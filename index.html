@@ -2,30 +2,113 @@
 <html>
 <head>
     <title>Super Predator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <style>
-        canvas {
-            border: 1px solid black;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: black;
+            color: white;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .left-panel {
+            flex-shrink: 0;
+        }
+
+        .controls {
+            margin-bottom: 10px;
+        }
+
+        canvas#canvas {
+            border: 1px solid white;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-width: 400px;
+        }
+
+        .chart-box {
+            height: 250px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            background: #1a1a1a;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+
+            button:hover {
+                background-color: #444;
+            }
+
+        input[type="range"] {
+            vertical-align: middle;
+        }
+
+        #iterationCount, #statistiqueCount {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: white;
         }
     </style>
 </head>
 <body>
-    <button id="toggleButton">Démarrer/Arrêter</button>
-    <button id="resetButton">reset</button>
-    <div>
-        <label for="speedSlider">Vitesse : </label>
+    <h1>Super Predator</h1>
+
+    <div class="controls">
+        <button id="toggleButton">Démarrer/Arrêter</button>
+        <button id="resetButton">Reset</button>
+        <button id="startButton">Start</button>
+        <label for="speedSlider">Vitesse :  </label>
         <input type="range" id="speedSlider" min="1" max="60" value="5">
     </div>
+
     <div id="iterationCount">Itération: 0</div>
-    <div id="statistiqueCount">Itération: 0</div>
-    <canvas id="canvas"></canvas>
+    <div id="statistiqueCount">Rabbits : 0   ||   Wolf : 0</div>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="rabbitsChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="wolvesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="animals.js"></script>
     <script src="automata.js"></script>
     <script src="interface.js"></script>
     <script>
         function updateRule(grid, iRow, iCol) {
             let nweeds = 0;
-            let nweedsClose = 0; // Voisins directs (rayon 1)
+            let nweedsClose = 0;
 
-            // Compter les voisins herbe dans un rayon de 3
             for (let i = -6; i < 7; i++) {
                 for (let j = -6; j < 7; j++) {
                     if (iRow + i < 0 || iRow + i >= grid.length) continue;
@@ -34,7 +117,6 @@
 
                     if (grid[iRow + i][iCol + j] == 1) {
                         nweeds++;
-                        // Compter aussi les voisins proches
                         if (Math.abs(i) <= 1 && Math.abs(j) <= 1) {
                             nweedsClose++;
                         }
@@ -42,16 +124,12 @@
                 }
             }
 
-            // Si c'est du vide (case 0)
             if (grid[iRow][iCol] == 0) {
-                // Si trop d'herbe dans la zone, bloquer toute croissance
                 if (nweeds >= 50) {
                     return 0;
                 }
 
-                // Propagation rapide si voisins proches
                 if (nweedsClose > 0) {
-                    // Bonus si entouré (favorise le remplissage compact)
                     let fillBonus = nweedsClose >= 3 ? 0.5 : 0;
                     const propagationChance = (nweedsClose * 0.025) + fillBonus;
                     if (Math.random() < propagationChance) {
@@ -59,12 +137,10 @@
                     }
                 }
 
-                // Germination spontanée rare
                 const germinationChance = 0.0001;
                 return Math.random() < germinationChance ? 1 : 0;
             }
 
-            // Sinon garder l'état actuel
             return grid[iRow][iCol];
         }
     </script>
