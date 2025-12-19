@@ -234,6 +234,50 @@ canvas.addEventListener('click', function (event) {
     drawGrid(grid, cellSize);
 });
 
+
+function updateBestAnimals() {
+    const rabbits = animals.filter(a => a.type === 2);
+    let bestRabbit = null;
+    if (rabbits.length > 0) {
+        bestRabbit = rabbits.reduce((best, current) =>
+            current.iterationsSurvived > best.iterationsSurvived ? current : best
+        );
+    }
+
+    const wolves = animals.filter(a => a.type === 3);
+    let bestWolf = null;
+    if (wolves.length > 0) {
+        bestWolf = wolves.reduce((best, current) =>
+            current.iterationsSurvived > best.iterationsSurvived ? current : best
+        );
+    }
+
+    const bestRabbitElement = document.getElementById('bestRabbit');
+    const bestWolfElement = document.getElementById('bestWolf');
+
+    if (bestRabbit) {
+        bestRabbitElement.innerHTML = `
+            <strong>🏆 Meilleur Lapin:</strong><br>
+            Survécu:  ${bestRabbit.iterationsSurvived} tours<br>
+            Nourriture mangée: ${bestRabbit.foodEaten}<br>
+            Faim actuelle: ${bestRabbit.hunger}
+        `;
+    } else {
+        bestRabbitElement.innerHTML = '<strong>🏆 Meilleur Lapin: </strong> Aucun';
+    }
+
+    if (bestWolf) {
+        bestWolfElement.innerHTML = `
+            <strong>🏆 Meilleur Loup:</strong><br>
+            Survécu: ${bestWolf.iterationsSurvived} tours<br>
+            Nourriture mangée:  ${bestWolf.foodEaten}<br>
+            Faim actuelle: ${bestWolf.hunger}
+        `;
+    } else {
+        bestWolfElement.innerHTML = '<strong>🏆 Meilleur Loup:</strong> Aucun';
+    }
+}
+
 function runSimulation() {
     if (!isRunning) return;
 
@@ -269,6 +313,7 @@ function runSimulation() {
             allPopulationData.wolves.push(wolves);
 
             updateCharts();
+            updateBestAnimals();
         }
     }, 1000 / speed);
 }

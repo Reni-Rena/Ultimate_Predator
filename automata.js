@@ -292,9 +292,10 @@ function updateGrid(grid, newGrid, animals, automataRuleCallback) {
         }
     }
 
-    // Mettre à jour les cooldowns
+    // Mettre à jour les cooldowns et statistiques
     for (let animal of newAnimals) {
         animal.updateCooldown();
+        animal.incrementIterations();
     }
 
     // Reproduction

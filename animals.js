@@ -6,6 +6,8 @@ class Animal {
         this.maxHunger = 0;
         this.hunger = 0;
         this.reproductionCooldown = 0;
+        this.iterationsSurvived = 0;
+        this.foodEaten = 0;
         this.reproductionCooldownMax = 15
         this.visionRange = 0;
         this.foodType = 0;
@@ -14,10 +16,15 @@ class Animal {
 
     eat() {
         this.hunger = 0;
+        this.foodEaten++;
     }
 
     incrementHunger() {
         this.hunger += this.speed;
+    }
+
+    incrementIterations() {
+        this.iterationsSurvived++;
     }
 
     updateCooldown() {
@@ -65,6 +72,15 @@ class Animal {
     move(targetX, targetY) {
         this.x = targetX;
         this.y = targetY;
+    }
+
+    getStats() {
+        return {
+            type: this.type === 2 ? 'Lapin' : 'Loup',
+            iterations: this.iterationsSurvived,
+            foodEaten: this.foodEaten,
+            hunger: this.hunger
+        };
     }
 }
 
