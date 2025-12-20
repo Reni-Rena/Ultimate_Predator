@@ -346,10 +346,11 @@ function runSimulation() {
         animationFrameId = requestAnimationFrame(runSimulation);
         iterationCountElement.innerText = `Itération: ${++i}`;
 
+        const weeds = grid.flat().filter(cell => cell === 1).length;
         const rabbits = animals.filter(a => a.type === 2).length;
         const wolves = animals.filter(a => a.type === 3).length;
 
-        statistiqueCountElement.innerText = `Rabbits : ${rabbits}   ||   Wolf : ${wolves}`;
+        statistiqueCountElement.innerText = `Weeds : ${weeds}   ||   Rabbits : ${rabbits}   ||   Wolf : ${wolves}`;
 
         // Adapter la fréquence de mise à jour du graphe selon la vitesse
         let updateInterval;
